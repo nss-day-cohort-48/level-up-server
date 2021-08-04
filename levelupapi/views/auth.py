@@ -7,29 +7,51 @@ from rest_framework.response import Response
 
 from levelupapi.models import Gamer
 
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_user(request):
+    """Checks if the user can log in and returns a valid token
+
+    Args:
+        request (Request): the request object
+
+    Returns:
+        Response: {
+            valid: boolean, is it a real user?
+            token: string, the token of the user
+        }
+    """
     username = request.data['username']
     password = request.data['password']
 
     authenticated_user = authenticate(username=username, password=password)
-
+    data = {}
     if authenticated_user is not None:
         token = Token.objects.get(user=authenticated_user)
         data = {
             'valid': True,
             'token': token.key
         }
-        return Response(data)
     else:
-        data = { 'valid': False}
+        data = {'valid': False}
 
-        return Response(data)
+    return Response(data)
+
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register_user(request):
+    """Registers a new user and creates their token
+
+    Args:
+        request (Request): the request object
+
+    Returns:
+        Response: {
+            token: the newly created user's token
+        }
+    """
     new_user = User.objects.create_user(
         username=request.data['username'],
         email=request.data['email'],
