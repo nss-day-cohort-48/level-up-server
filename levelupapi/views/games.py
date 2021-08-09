@@ -11,7 +11,7 @@ from levelupapi.models import Game, GameType, Gamer
 class GameViewSet(ViewSet):
 
     def create(self, request):
-        gamer = Gamer.objects.get(request.auth.user)
+        gamer = Gamer.objects.get(user=request.auth.user)
         game_type = GameType.objects.get(pk=request.data['game_type_id'])
         try:
             game = Game.objects.create(
