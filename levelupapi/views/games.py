@@ -12,19 +12,19 @@ class GameViewSet(ViewSet):
 
     def create(self, request):
         gamer = Gamer.objects.get(user=request.auth.user)
-        game_type = GameType.objects.get(pk=request.data['game_type_id'])
+        game_type = GameType.objects.get(pk=request.data['gameTypeId'])
         try:
             game = Game.objects.create(
                 gamer=gamer,
                 game_type=game_type,
-                description=request.data['description'],
+                description=request.data['descriptions'],
                 name=request.data['name'],
-                number_of_players=request.data['number_of_players'],
-                skill_level=request.data['skill_level'],
+                number_of_players=request.data['numberOfPlayers'],
+                skill_level=request.data['skillLevel'],
                 maker=request.data['maker'],
             )
             serializer = GameSerializer(game, context={'request': request})
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except ValidationError as ex:
             return Response({"reason": ex.message}, status=status.HTTP_400_BAD_REQUEST)
