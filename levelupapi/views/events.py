@@ -95,16 +95,42 @@ class EventView(ViewSet):
             Response -- JSON serialized list of events
         """
         events = Event.objects.all()
-
+        gamer = Gamer.objects.get(user=request.auth.user)
         # Support filtering events by game
         game = self.request.query_params.get('game_id', None)
         if game is not None:
             events = events.filter(game__id=game)
 
+        for event in events:
+            event.joined = gamer in event.attendees.all()
+
         serializer = EventSerializer(
             events, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(methods=['post', 'delete'], detail=True)
+    def signup(self, request, pk):
+        gamer = Gamer.objects.get(user=request.auth.user)
+        try:
+            event = Event.objects.get(pk=pk)
+        except Event.DoesNotExist:
+           return Response(
+            {'message': 'Event does not exist.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+        if request.method == "POST":
+            try:
+                event.attendees.add(gamer)
+                return Response({}, status=status.HTTP_201_CREATED)
+            except Exception as ex:
+                return Response({'message': ex.args[0]})
+        elif request.method == "DELETE":
+            try:
+                event.attendees.remove(gamer)
+                return Response(None, status=status.HTTP_204_NO_CONTENT)
+            except Exception as ex:
+                return Response({'message': ex.args[0]})
 
 class EventUserSerializer(serializers.ModelSerializer):
     """JSON serializer for event organizer's related Django user"""
@@ -137,4 +163,4 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'game', 'host',
-                  'description', 'date', 'time')
+                  'description', 'date', 'time', 'joined')

@@ -23,3 +23,11 @@ class Event(models.Model):
 
     def __str__(self) -> str:
         return f'{self.game.name} on {self.date} hosted by {self.host}'
+    
+    @property
+    def joined(self):
+        return True
+
+    @joined.setter
+    def joined(self, value):
+        self.__joined = value

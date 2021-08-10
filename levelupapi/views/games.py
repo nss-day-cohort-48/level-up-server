@@ -11,13 +11,21 @@ from levelupapi.models import Game, GameType, Gamer
 class GameViewSet(ViewSet):
 
     def create(self, request):
+        """[summary]
+
+        Args:
+            request ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         gamer = Gamer.objects.get(user=request.auth.user)
         game_type = GameType.objects.get(pk=request.data['gameTypeId'])
         try:
             game = Game.objects.create(
                 gamer=gamer,
                 game_type=game_type,
-                description=request.data['descriptions'],
+                description=request.data['description'],
                 name=request.data['name'],
                 number_of_players=request.data['numberOfPlayers'],
                 skill_level=request.data['skillLevel'],
