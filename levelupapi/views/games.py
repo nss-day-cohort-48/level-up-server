@@ -57,12 +57,12 @@ class GameViewSet(ViewSet):
 
     def update(self, request, pk):
         game = Game.objects.get(pk=pk)
-        game_type = GameType.objects.get(pk=request.data['game_type_id'])
+        game_type = GameType.objects.get(pk=request.data['gameTypeId'])
         game.maker = request.data['maker']
         game.description = request.data['description']
-        game.skill_level = request.data['skill_level']
+        game.skill_level = request.data['skillLevel']
         game.name = request.data['name']
-        game.number_of_players = request.data['number_of_players']
+        game.number_of_players = request.data['numberOfPlayers']
         game.game_type = game_type
 
         game.save()

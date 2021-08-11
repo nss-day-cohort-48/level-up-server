@@ -26,8 +26,13 @@ class Event(models.Model):
     
     @property
     def joined(self):
-        return True
+        return self.__joined
 
     @joined.setter
     def joined(self, value):
         self.__joined = value
+
+    @property
+    def attendee_count(self):
+        length = len(self.attendees.all())
+        return length
